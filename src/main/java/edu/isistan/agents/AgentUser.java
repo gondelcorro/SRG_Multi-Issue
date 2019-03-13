@@ -20,18 +20,20 @@ import edu.isistan.util.Utilidades;
 public class AgentUser {
 	
 	private String nombreUsuario;
+	private String catalogo;
 	private List<IItem> listaItems;
 	private List<Utilidades> listaUtilidades;
 	private IItem propuestaActual;
 	private float utilidadActual;
 
 	public AgentUser() {
-		//System.out.println("AGENTE " + getNombreUsuario());
+
+		//this.catalogo = 
 		//this.loadItems();
 		//this.loadUtilidades();
 	}
 
-	private void loadItems() {
+	public void loadItems() {
 
 		this.listaItems = new ArrayList<>();
 		File archivo = null;
@@ -60,7 +62,7 @@ public class AgentUser {
 		}
 	}
 	
-	private void loadUtilidades() {
+	public void loadUtilidades() {
 		listaUtilidades = new ArrayList<>();
 		for(IItem item : listaItems) {
 			Utilidades utilidad = new Utilidades();
