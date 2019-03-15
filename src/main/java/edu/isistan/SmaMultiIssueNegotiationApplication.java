@@ -12,9 +12,9 @@ public class SmaMultiIssueNegotiationApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SmaMultiIssueNegotiationApplication.class, args);
 	}
-
-	@Bean
-	public AgentMediator getMediator() {
+	
+ 	@Bean
+	public AgentMediator agentMediator() {
 		return new AgentMediator();
 	}
 

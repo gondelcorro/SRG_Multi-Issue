@@ -1,11 +1,7 @@
 package edu.isistan.items;
 
-import java.util.List;
-
-public interface IItem<T> {
+public interface IItem {
 	
-	
-	public List<T> loadItems();
 	public String getNombre();
 	public void setNombre(String nombre);
 
