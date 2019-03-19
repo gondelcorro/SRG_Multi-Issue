@@ -1,12 +1,9 @@
 package edu.isistan.items;
 
-import org.springframework.stereotype.Component;
-
-//@Component("cena")
 public class Cena implements IItem{
 
 	private String nombre;
-	
+
 	@Override
 	public String getNombre() {
 		return nombre;
