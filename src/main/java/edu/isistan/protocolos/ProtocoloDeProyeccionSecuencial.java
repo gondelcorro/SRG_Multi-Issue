@@ -1,22 +1,29 @@
-package edu.isistan.protocols;
+package edu.isistan.protocolos;
 
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.time.StopWatch;
 
-public class ProtocoloDeProyeccionSecuencial {
+import edu.isistan.agentes.AgentUser;
+import edu.isistan.items.IItem;
+
+public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 	
-	StopWatch timer = new StopWatch();
-	
-	public ProtocoloDeProyeccionSecuencial() {
+	List<AgentUser> listaAgentes;
+	HashMap<AgentUser, IItem>  propuestas;
+
+	@Override
+	public void ejecutarProtocolo(List<AgentUser> listaAgentes) {
 		
-	}
-	
-	public  void executarProtocolo() {
+		this.listaAgentes = listaAgentes;
 		
 		StopWatch timer = new StopWatch();
 		timer.start();
+		
+		
+		propuestas = recolectarPropIniciales();
+		
 		/*
 		//Step 1: Inform the agents about the concession strategy they have to use
 		informConcessionStrategyToAgents();
@@ -69,6 +76,12 @@ public class ProtocoloDeProyeccionSecuencial {
 		this.setLastAgreement(getAgreement(proposals));
 		*/
 		timer.stop();
+		
+	}
+	
+	private HashMap<AgentUser, IItem> recolectarPropIniciales() {
+		
+		return propuestas;
 	}
 
 }

@@ -4,10 +4,7 @@ import java.util.Scanner;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import edu.isistan.agents.AgentMediator;
-import edu.isistan.agents.AgentUser;
+import edu.isistan.agentes.AgentMediator;
 import edu.isistan.items.Cena;
 import edu.isistan.items.IItem;
 import edu.isistan.items.Pelicula;

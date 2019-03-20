@@ -1,4 +1,4 @@
-package edu.isistan.agents;
+package edu.isistan.agentes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,13 +12,14 @@ import org.springframework.core.io.ClassPathResource;
 import edu.isistan.items.IItem;
 import edu.isistan.util.Utilidades;
 
-public class AgentUser {
+public class AgentUser implements Comparable<AgentUser>{
 
-	private String nombreUsuario;
+	private String nombre;
 	private List<IItem> listaItems;
 	private List<Utilidades> listaUtilidades;
 	private IItem propuestaActual;
 	private float utilidadActual;
+	private Float utilidadDeReserva;//min aceptable. Definido como wrapper p/poder implementar comparable
 
 	public AgentUser() {
 	}
@@ -67,41 +68,41 @@ public class AgentUser {
 		Collections.reverse(listaUtilidades);
 	}
 	
-	/*
-    public Movie elegirPropuesta() { // La eleccion es tomar la 1era pelicula
+	
+    public IItem elegirPropuesta() { // La eleccion es tomar la 1era pelicula, la de mayor utilidad (ya q la lista esta ordenada de mayor a menor)
         if (!this.listaUtilidades.isEmpty()) {
-            Utilidades utilidad = this.listaUtilidades.remove(0); //la saco d la lista y guardo la movie y su utilidad
-            propuestaActual = utilidad.getMovie();
-            utilidadActual = utilidad.getUtilidad();
+            Utilidades utilidad = this.listaUtilidades.remove(0); //la saco d la lista y guardo el item y su utilidad
+            this.propuestaActual = utilidad.getItem();
+            this.utilidadActual = utilidad.getUtilidad();
             return propuestaActual;
         }
         return null;
     }
 
-    public boolean aceptaPropuesta(Movie peli) {// se acepta si la utilidad d la peli prop es > q la prop actual
-        float utilidadPeliPropuesta = getUtilidad(peli);
-        System.out.println("Agente " + this.getLocalName() + ": UPeliPropuesta(" + peli.getName() + ")= " + utilidadPeliPropuesta + " | UMiPropuesta(" + propuestaActual.getName() + ")=" + this.utilidadActual);
+    public boolean aceptaPropuesta(IItem item) {// se acepta si la utilidad del item prop es > q la utilidad de la prop actual
+        float utilidadPeliPropuesta = getUtilidad(item);
+        System.out.println("Agente " + this.getNombre() + ": UPeliPropuesta(" + item.getNombre() + ")= " + utilidadPeliPropuesta + " | UMiPropuesta(" + propuestaActual.getNombre() + ")=" + this.utilidadActual);
         return (utilidadPeliPropuesta >= this.utilidadActual); //retorna true (acepta) si la utilidad de peliPropuesta es mayor o igual a la utilidad de mi propuesta
     }
 
-    public float getUtilidad(Movie movie) {
+    
+    public float getUtilidad(IItem item) {
         float utilidad = 0;
         for (Utilidades u : listaUtilidades) {
-            if (u.getMovie().equals(movie)) {
+            if (u.getItem().equals(item)) {
                 utilidad = u.getUtilidad();
                 break;
             }
         }
         return utilidad;
     }
-	*/
 	
-	public String getNombreUsuario() {
-		return nombreUsuario;
+	public String getNombre() {
+		return nombre;
 	}
 
-	public void setNombreUsuario(String nombreUsuario) {
-		this.nombreUsuario = nombreUsuario;
+	public void setNombre(String nombreUsuario) {
+		this.nombre = nombreUsuario;
 	}
 
 	public List<IItem> getListaItems() {
@@ -118,6 +119,38 @@ public class AgentUser {
 
 	public void setListaUtilidades(List<Utilidades> listaUtilidades) {
 		this.listaUtilidades = listaUtilidades;
+	}
+	
+	public IItem getPropuestaActual() {
+		return propuestaActual;
+	}
+
+	public void setPropuestaActual(IItem propuestaActual) {
+		this.propuestaActual = propuestaActual;
+	}
+
+	public float getUtilidadActual() {
+		return utilidadActual;
+	}
+
+	public void setUtilidadActual(float utilidadActual) {
+		this.utilidadActual = utilidadActual;
+	}
+
+	public Float getUtilidadDeReserva() {
+		return utilidadDeReserva;
+	}
+
+	public void setUtilidadDeReserva(Float utilidadDeReserva) {
+		this.utilidadDeReserva = utilidadDeReserva;
+	}
+
+	@Override
+	public int compareTo(AgentUser ag) {
+		if (getUtilidadDeReserva() == null  || ag.getUtilidadDeReserva() == null) {
+            return 0;
+        }
+        return getUtilidadDeReserva().compareTo(ag.getUtilidadDeReserva());
 	}
 
 }
