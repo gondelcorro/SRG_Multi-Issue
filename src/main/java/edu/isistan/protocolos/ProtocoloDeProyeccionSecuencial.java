@@ -1,5 +1,8 @@
 package edu.isistan.protocolos;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,77 +14,90 @@ import edu.isistan.items.IItem;
 public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 	
 	List<AgentUser> listaAgentes;
-	HashMap<AgentUser, IItem>  propuestas;
+	HashMap<AgentUser, IItem>  propuestasIniciales;
+	AgentUser agenteQuePropone;
+	boolean acuerdo = false;
 
 	@Override
 	public void ejecutarProtocolo(List<AgentUser> listaAgentes) {
 		
 		this.listaAgentes = listaAgentes;
-		
 		StopWatch timer = new StopWatch();
 		timer.start();
 		
+		//PASO 1: RECOLECTAR PROPUESTAS INICIALES
+		propuestasIniciales = recolectarPropIniciales();
+		System.out.println("Propuestas iniciales de los agentes:");
+		propuestasIniciales.forEach((agente, item) -> System.out.println(agente.getNombre() + ": " + item.getNombre() + " - U(" + agente.getUtilidad(item) + ")"));
 		
-		propuestas = recolectarPropIniciales();
-		
-		/*
-		//Step 1: Inform the agents about the concession strategy they have to use
-		informConcessionStrategyToAgents();
-		
-		//Step 2: Collect initial proposals (load the HashMap<AgentID, Proposal>)
-		HashMap<String, AgProposal<T>> proposals = collectInitialProposals();
+		//PASO 2: FIJAR ORDEN AGENTES
+		fijarOrdenAgentes();
 
-		//Step 3: Loop until you reach an Agreement or a Conflict
-		while(!checkAgreement(proposals)){
-
-			//Select who has to concede
-			logger.info("Step 3.a: Select Agent who has to concede");
-			List<UserAg<T>> shouldConcede = this.negotiationStrategy.selectWhoHasToConcede(agContainer.values()); //can be more than one if, for example, there are more than 1 agent with the same willingness to risk conflict value (if using the Zeuthen Strategy)
-
-			if (shouldConcede.isEmpty()){
-				logger.info("Step 4: CONFLICT REACHED.");
-				timer.stop();
-				return createNegotiationResult(new ConflictDealAgProposal<T>(), timer.getTime()); //conflict 
-			}				
-			else{				
-				logger.info("Step 3.b: Agent/s who has to concede [#= "+ shouldConcede.size()+"]=> "+ shouldConcede.toString());
-				
-				for (UserAg<T> concedingAg : shouldConcede){
-					//Make "concedingAg" to concede
-					AgProposal<T> newProposal;
-					try {
-						newProposal = concedingAg.makeConcession();
-						
-						logger.info("Step 3.c: New Proposal made by the agent => "+newProposal.toString());
-						//Update proposals map
-						proposals.put(concedingAg.getID(), newProposal);
-						
-//						//REMOVE THIS or change it -- debug only
-//						HashMap<String, Double> utilitiesMap = new HashMap<>();
-//						for (UserAg<T> ag : agContainer.values())
-//							utilitiesMap.put(ag.getID(), ag.getUtilityFor(newProposal));
-//							
-//						logger.debug("Utilities over new proposal:"+utilitiesMap);
-						
-					} catch (NonConcedableCurrentProposalException e) {
-						  This should never happen because we have invoked the method using an agent 
-						  that we know that it can concede but as we need to catch the exception we 
-						  need this catch block.
-						 
-					}
-				}
-			}
+		//PASO 3: CHEQUEAR SI SE ACEPTA LA PROPUESTA
+		acuerdo = chequearAcuerdo();
+		if(acuerdo) {
+			System.out.println("La propuesta es aceptada. Fin de la negociacion.");
+		}else {
+			System.out.println("\nNo hay acuerdo en el propuesta del agente " + agenteQuePropone.getNombre());
 		}
-		//At this point an agreement should have been found => return it
-		this.setLastAgreement(getAgreement(proposals));
-		*/
+
 		timer.stop();
 		
 	}
 	
 	private HashMap<AgentUser, IItem> recolectarPropIniciales() {
+		propuestasIniciales = new HashMap<>();
+		for(AgentUser agente : listaAgentes) {
+			IItem item = agente.elegirPropuesta();
+			propuestasIniciales.put(agente, item);
+		}
+		return propuestasIniciales;
+	}
+	
+	private void fijarOrdenAgentes() {
+		//Va a proponer primero el agente con mayor reservaDeUtilidad (no arbitrario)
+		Collections.sort(listaAgentes, Comparator.comparing(AgentUser::getUtilidadDeReserva));
+		Collections.reverse(listaAgentes);
+		System.out.println("\nOrden de propuesta de los agentes:" );
+		listaAgentes.forEach(agent -> System.out.println(agent.getNombre() + " | Ur (" + agent.getUtilidadDeReserva() + ")"));
+	}
+	
+	private boolean chequearAcuerdo() {
+		agenteQuePropone = listaAgentes.get(0); // listaAgentes ya esta ordenada x mayor Ur
+		System.out.println("\nEl agente " + agenteQuePropone.getNombre() + " propone " + agenteQuePropone.getPropuestaActual().getNombre());
+		List<Boolean> listaRespuestas = new ArrayList<>();
+		Boolean respuestaAgente;
+		for(AgentUser agente : listaAgentes) {
+			if(!agenteQuePropone.equals(agente)) {
+				respuestaAgente = agente.aceptaPropuesta(agenteQuePropone.getPropuestaActual());
+				if(respuestaAgente) {
+					System.out.println("El agente " + agente.getNombre() + " acepta la propuesta " + agenteQuePropone.getPropuestaActual().getNombre());
+				}else {
+					System.out.println("El agente " + agente.getNombre() + " rechaza la propuesta " + agenteQuePropone.getPropuestaActual().getNombre());
+				}
+				listaRespuestas.add(respuestaAgente);
+			}
+		}
+		for(Boolean respuesta : listaRespuestas) {
+			if(!respuesta) { //si al menos un agente rechaza la propuesta -> no hay acuerdo
+				acuerdo = false;
+				break;
+			}
+			acuerdo = true;
+		}
 		
-		return propuestas;
+		return acuerdo;
+		/*
+		propuestasIniciales.forEach((agente, item) -> {
+			if(!agenteQuePropone.equals(agente)) {
+				acuerdo = agente.aceptaPropuesta(agenteQuePropone.getPropuestaActual());
+				if(acuerdo) {
+					System.out.println("El agente " + agente.getNombre() + " acepta la propuesta " + item.getNombre());
+				}else {
+					System.out.println("El agente " + agente.getNombre() + " rechaza la propuesta " + item.getNombre());
+				}
+			}
+		});*/
 	}
 
 }

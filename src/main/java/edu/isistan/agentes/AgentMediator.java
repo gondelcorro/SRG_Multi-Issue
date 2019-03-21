@@ -22,7 +22,6 @@ public class AgentMediator {
 		this.rutaCatalogo = rutaCatalogo;
 		
 		crearGrupo();
-		fijarOrdenAgentes();
 		IProtocolo protocolo = new ProtocoloDeProyeccionSecuencial();
 		protocolo.ejecutarProtocolo(listaAgentes);
 	}
@@ -35,7 +34,7 @@ public class AgentMediator {
 		while(i<=num_participantes) {
 			AgentUser agentUser = new AgentUser();
 			agentUser.setNombre("Agente" + i);
-			agentUser.loadCatalogo(itemANegociar, rutaCatalogo); //los agentes misma lista de items a negociar
+			agentUser.loadCatalogo(itemANegociar, rutaCatalogo); //los agentes tienen la misma lista de items a negociar
 			agentUser.loadUtilidades();
 			agentUser.setUtilidadDeReserva(generarRandom(2.5f, 1.0f));// random entre 2.5 y 3.5
 			listaAgentes.add(agentUser);
@@ -47,19 +46,11 @@ public class AgentMediator {
 			/*for(Object item : agente.getListaItems()) {
 				System.out.print( ((IItem)item).getNombre() + " | ");
 			}*/
-			agente.getListaUtilidades().forEach(item -> System.out.print(item.getItem().getNombre() + " - " + item.getUtilidad() + " | "));
+			agente.getListaUtilidadesOriginal().forEach(item -> System.out.print(item.getItem().getNombre() + " - " + item.getUtilidad() + " | "));
 			System.out.println("");
 			System.out.println("Utilidad de reserva: " + agente.getUtilidadDeReserva() + "\n");
 			
 		}
-	}
-	
-	private void fijarOrdenAgentes() {
-		//Va a proponer primero el agente con mayor reservaDeUtilidad (no arbitrario)
-		System.out.println("Orden de propuesta de los agentes:" );
-		Collections.sort(listaAgentes);
-		Collections.reverse(listaAgentes);
-		listaAgentes.forEach(agent -> System.out.println(agent.getNombre() + " | Ur (" + agent.getUtilidadDeReserva() + ")"));
 	}
 
 	private float generarRandom(float min,float max) {
