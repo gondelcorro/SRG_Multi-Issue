@@ -50,6 +50,7 @@ public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 				AgentUser agenteQuePropone = listaAgentes.get(turnoAgente); //turno de proponer del siguiente agente, va por orden prefijado
 				
 				IItem itemAProponer = estrategiaConcesion.ejecutarEstrategia(listaAgentes, agenteQuePropone);
+				chequearAcuerdo(turnoAgente);
 				System.out.println("Propuesta: " + itemAProponer.getNombre());
 				//Si no hay un acuerdo con la propuesta inicial, la estrategia de concesion debe devolver la cant
 				//que debe conceder el siguiente agente segun el orden fijado (hacer rondas)
