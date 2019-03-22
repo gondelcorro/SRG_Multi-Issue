@@ -24,6 +24,8 @@ public class AgentUser {
 	private IItem propuestaActual;
 	private float utilidadActual;
 	private Float utilidadDeReserva;//min aceptable. Definido como wrapper p/poder implementar comparable
+	private List<Utilidades> listaUtilidadesYaPropuestas;
+	
 
 	public AgentUser() {
 	}
@@ -77,7 +79,9 @@ public class AgentUser {
 	
     public IItem elegirPropuesta() { // La eleccion es tomar la 1era pelicula, la de mayor utilidad (ya q la lista esta ordenada de mayor a menor)
         if (!this.listaUtilidadesTemporal.isEmpty()) {
+            listaUtilidadesYaPropuestas = new ArrayList();
             Utilidades utilidad = this.listaUtilidadesTemporal.remove(0); //la saco d la lista y guardo el item y su utilidad
+            listaUtilidadesYaPropuestas.add(utilidad); //guarda las propuestas q van realizando los agentes
             this.propuestaActual = utilidad.getItem();
             this.utilidadActual = utilidad.getUtilidad();
             return propuestaActual;
@@ -85,10 +89,10 @@ public class AgentUser {
         return null;
     }
 
-    public boolean aceptaPropuesta(IItem item) {// se acepta si la utilidad del item prop es > q la utilidad de la prop actual
+    public boolean aceptaPropuesta(IItem item) {// se acepta si la utilidad del item prop es >= q la utilidad de la prop actual
         float utilidadItemPropuesta = this.getUtilidad(item);
         System.out.println("\n" + this.getNombre() + ": UItemPropuesto(" + item.getNombre() + ")= " + utilidadItemPropuesta + " | UMiPropuesta(" + propuestaActual.getNombre() + ")=" + this.utilidadActual);
-        return (utilidadItemPropuesta >= this.utilidadActual); //retorna true (acepta) si la utilidad de peliPropuesta es mayor o igual a la utilidad de mi propuesta
+        return (utilidadItemPropuesta >= this.utilidadActual);
     }
 
     //sobreescribir equals & hashcode
@@ -157,6 +161,14 @@ public class AgentUser {
 
 	public void setUtilidadDeReserva(Float utilidadDeReserva) {
 		this.utilidadDeReserva = utilidadDeReserva;
+	}
+
+	public List<Utilidades> getListaUtilidadesYaPropuestas() {
+		return listaUtilidadesYaPropuestas;
+	}
+
+	public void setListaUtilidadesYaPropuestas(List<Utilidades> listaUtilidadesYaPropuestas) {
+		this.listaUtilidadesYaPropuestas = listaUtilidadesYaPropuestas;
 	}
 
 }

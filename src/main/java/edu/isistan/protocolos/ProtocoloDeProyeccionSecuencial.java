@@ -9,11 +9,13 @@ import java.util.List;
 import org.apache.commons.lang3.time.StopWatch;
 
 import edu.isistan.agentes.AgentUser;
+import edu.isistan.estrategiasConcesion.IEstrategiaConcesion;
 import edu.isistan.items.IItem;
 
 public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 	
 	List<AgentUser> listaAgentes;
+	IEstrategiaConcesion estrategiaConcesion;
 	HashMap<AgentUser, IItem>  propuestasIniciales;
 	AgentUser agenteQuePropone;
 	boolean acuerdo = false;
@@ -34,11 +36,27 @@ public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 		fijarOrdenAgentes();
 
 		//PASO 3: CHEQUEAR SI SE ACEPTA LA PROPUESTA
-		acuerdo = chequearAcuerdo();
+		int turnoAgente = 0;
+		acuerdo = chequearAcuerdo(turnoAgente);
 		if(acuerdo) {
 			System.out.println("La propuesta es aceptada. Fin de la negociacion.");
 		}else {
 			System.out.println("\nNo hay acuerdo en el propuesta del agente " + agenteQuePropone.getNombre());
+			//PASO 3.A: NEGOCIAR HASTA ALCANZAR ACUERDO
+			/*while(!acuerdo) {
+				while(){}
+			}*/
+			while(turnoAgente < listaAgentes.size()) { //mientras no termine la ronda
+				AgentUser agenteQuePropone = listaAgentes.get(turnoAgente); //turno de proponer del siguiente agente, va por orden prefijado
+				
+				IItem itemAProponer = estrategiaConcesion.ejecutarEstrategia(listaAgentes, agenteQuePropone);
+				System.out.println("Propuesta: " + itemAProponer.getNombre());
+				//Si no hay un acuerdo con la propuesta inicial, la estrategia de concesion debe devolver la cant
+				//que debe conceder el siguiente agente segun el orden fijado (hacer rondas)
+				//despues debo verificar si restando ese valor de utilidad no supero la Ur
+				//entonces tomo la 
+				turnoAgente = turnoAgente + 1;
+			}
 		}
 
 		timer.stop();
@@ -62,8 +80,8 @@ public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 		listaAgentes.forEach(agent -> System.out.println(agent.getNombre() + " | Ur (" + agent.getUtilidadDeReserva() + ")"));
 	}
 	
-	private boolean chequearAcuerdo() {
-		agenteQuePropone = listaAgentes.get(0); // listaAgentes ya esta ordenada x mayor Ur
+	private boolean chequearAcuerdo(int turnoAgente) {
+		agenteQuePropone = listaAgentes.get(turnoAgente); // listaAgentes ya esta ordenada x mayor Ur
 		System.out.println("\nEl agente " + agenteQuePropone.getNombre() + " propone " + agenteQuePropone.getPropuestaActual().getNombre());
 		List<Boolean> listaRespuestas = new ArrayList<>();
 		Boolean respuestaAgente;
@@ -98,6 +116,11 @@ public class ProtocoloDeProyeccionSecuencial implements IProtocolo{
 				}
 			}
 		});*/
+	}
+
+	@Override
+	public void setEstrategiaConcesion(IEstrategiaConcesion estretegiaConcesion) {
+		this.estrategiaConcesion = estretegiaConcesion;
 	}
 
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.isistan.estrategiasConcesion.IEstrategiaConcesion;
+import edu.isistan.estrategiasConcesion.EstrategiaReactiva;
 import edu.isistan.items.IItem;
 import edu.isistan.protocolos.IProtocolo;
 import edu.isistan.protocolos.ProtocoloDeProyeccionSecuencial;
@@ -23,6 +25,8 @@ public class AgentMediator {
 		
 		crearGrupo();
 		IProtocolo protocolo = new ProtocoloDeProyeccionSecuencial();
+		IEstrategiaConcesion estrategiaZeuthen = new EstrategiaReactiva();
+		protocolo.setEstrategiaConcesion(estrategiaZeuthen);
 		protocolo.ejecutarProtocolo(listaAgentes);
 	}
 	
