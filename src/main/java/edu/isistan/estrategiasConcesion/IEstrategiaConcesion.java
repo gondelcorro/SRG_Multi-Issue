@@ -7,5 +7,5 @@ import edu.isistan.items.IItem;
 
 public interface IEstrategiaConcesion {
 
-	public IItem ejecutarEstrategia(List<AgentUser> listaAgentes, AgentUser agente);
+	public IItem ejecutarEstrategia(List<AgentUser> listaAgentes, AgentUser agente, boolean primeraVez);
 }

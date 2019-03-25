@@ -19,7 +19,7 @@ public class Utilidades {
 	public void setUtilidad(Float utilidad) {
 		this.utilidad = utilidad;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -49,5 +49,4 @@ public class Utilidades {
 			return false;
 		return true;
 	}
-	
 }
