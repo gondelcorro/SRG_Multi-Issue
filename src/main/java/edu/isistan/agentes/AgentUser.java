@@ -24,7 +24,7 @@ public class AgentUser {
 	private IItem propuestaActual;
 	private float utilidadActual;
 	private Float utilidadDeReserva;//min aceptable. Definido como wrapper p/poder implementar comparable
-	private List<Utilidades> listaUtilidadesYaPropuestas;
+	private List<Utilidades> listaUtilidadesYaPropuestas = new ArrayList(); ;
 	
 
 	public AgentUser() {
@@ -79,7 +79,6 @@ public class AgentUser {
 	
     public IItem elegirPropuesta() { // La eleccion es tomar la 1era pelicula, la de mayor utilidad (ya q la lista esta ordenada de mayor a menor)
         if (!this.listaUtilidadesTemporal.isEmpty()) {
-            listaUtilidadesYaPropuestas = new ArrayList();
             Utilidades utilidad = this.listaUtilidadesTemporal.remove(0); //la saco d la lista y guardo el item y su utilidad
             listaUtilidadesYaPropuestas.add(utilidad); //guarda las propuestas q van realizando los agentes
             this.propuestaActual = utilidad.getItem();

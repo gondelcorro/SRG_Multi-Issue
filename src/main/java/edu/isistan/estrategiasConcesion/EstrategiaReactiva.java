@@ -30,42 +30,49 @@ public class EstrategiaReactiva implements IEstrategiaConcesion{
 		this.primeraVez = primeraVez;
 		this.concesionAgentes = new HashMap<>();
 		float cantAConceder = 0f;
-		Utilidades ultimaPropuesta;
+		Utilidades ultimaPropuesta = null;
 		Utilidades penultimaPropuesta = null; 
+		boolean bandera = false;
 		
 		if(primeraVez) {
 			propQSeDebeRealizar = agenteQuePropone.getPropuestaActual();
 		}else {
 			for(AgentUser agente : listaAgentes) {
 				List<Utilidades> propuestasRealizadas = agente.getListaUtilidadesYaPropuestas();
-				ultimaPropuesta = propuestasRealizadas.get(propuestasRealizadas.size()-1); 
-				ultimaPropuesta.setUtilidad(agente.getUtilidad(agente.getPropuestaActual()));
-				try {
-					// ojo aqui, la 2da vez q se propone sólo hay un elem en propuestasYaRealizadas, devuelve null
+				if(propuestasRealizadas.size() >= 2) {
+					ultimaPropuesta = propuestasRealizadas.get(propuestasRealizadas.size()-1); 
 					penultimaPropuesta = propuestasRealizadas.get(propuestasRealizadas.size()-2);
-					cantAConceder = ultimaPropuesta.getUtilidad() - penultimaPropuesta.getUtilidad();
+					cantAConceder = (penultimaPropuesta.getUtilidad() - ultimaPropuesta.getUtilidad()); // actua como cola, la penultima tiene mayor utilidad
 					concesionAgentes.put(agente, cantAConceder);
-					propQSeDebeRealizar = obtenerPropuesta(); //Aplicando la estrategia
-				} catch (Exception e) {
-					//Elegir una propuesta mas de la listaOriginal (Esto es x unica vez hasta obtener las 2 prop minimas q se necesitan)
+				}else {
 					propQSeDebeRealizar = agenteQuePropone.elegirPropuesta();
+					bandera = true;
 					break;
 				}
+			}
+			if(!bandera) {
+				propQSeDebeRealizar = obtenerPropuesta(ultimaPropuesta); //Aplicando la estrategia
 			}
 		}
 		return propQSeDebeRealizar;
 	}
 	
-	private IItem obtenerPropuesta() {
+	private IItem obtenerPropuesta(Utilidades ultimaPropuesta) {
 		//obtener la key con el valor min en un hashmap con java 8
 		AgentUser agConLaMenorConcesion =  (AgentUser) Collections.min(concesionAgentes.entrySet(),  Map.Entry.comparingByValue()).getKey(); 
 		float minConcesion = concesionAgentes.get(agConLaMenorConcesion);
 		IItem item = null;
-		System.out.println("Minima Concesion :" + minConcesion);
+		System.out.println("Min concesion:" + minConcesion);
 		//De la lista de propuestas orgininal del agente q propone, q obtenga la 1er prop q tenga un valor menor o igual al minConcesion
+		//agenteQuePropone.getPropuestaActual()
 		for(Utilidades utilidad : agenteQuePropone.getListaUtilidadesOriginal()) {
-			if(utilidad.getUtilidad() <= agenteQuePropone.getUtilidad(agenteQuePropone.getPropuestaActual()) - minConcesion) {
-				item = utilidad.getItem();
+			item = agenteQuePropone.elegirPropuesta();
+			
+			//if((agenteQuePropone.getUtilidad(item) - minConcesion) <=  utilidad.getUtilidad()) {
+			
+			if((ultimaPropuesta.getUtilidad()-minConcesion) <= agenteQuePropone.getUtilidad(item) ) {
+				//invocar a elegir propuesta para q se actualice la listaTemporal
+				//item;
 				break;
 			}
 		}
